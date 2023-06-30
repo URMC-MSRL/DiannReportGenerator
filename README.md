@@ -14,20 +14,24 @@ Precursors are filtered by both Library Q-Value and Protein Group Library Q-Valu
 
 ## Installation
 
-You can install the development version of DiannReportGenerator from:
+Prior to installing this package, you will need to install the latest version of RTools along with the "DiaNN R Package" developed by the Demichev lab.
+You can download and install RTools from here:
+<https://cran.r-project.org/bin/windows/Rtools/>
 
-<https://github.com/kswovick/DIANN-Report-Generator>
-
-Prior to running, the 'DiaNN R Package' developed by the Demichev lab needs to be installed. The package and instructions can be found at:
-
+DiaNN R Package can be found here:
 <https://github.com/vdemichev/diann-rpackage>
+
+You can install DiannReportGenerator from:
+
+<https://github.com/URMC-MSRL/DiannReportGenerator>
 
 In short, instructions are as follows:
 
     install.packages("devtools")
-    library(devtools)
-    install_github("https://github.com/vdemichev/diann-rpackage")
-    library(diann)
+    devtools::install_github("https://github.com/vdemichev/diann-rpackage")
+    devtools::install_github("https://github.com/URMC-MSRL/DiannReportGenerator")
+    library(DiannReportGenerator)
+
 
 ## Instructions
 
@@ -35,4 +39,5 @@ In short, instructions are as follows:
 
 Put the name of the main DIA-NN report in quotes, followed by whatever you wish to call the new document in quotes.
 
-    diann_reporter("report.tsv", "new_report.tsv")
+    diann_reporter("report.tsv", 
+                   "new_report.tsv")
