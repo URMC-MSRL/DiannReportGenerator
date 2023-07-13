@@ -57,24 +57,23 @@ eliminate_duplicate <- function(df) {
 diann_reporter <- function(report_in, report_out
                            ) {
 
-   filtered_diann_report <- diann::diann_load(report_in) %>%
-      dplyr::filter(
-         Lib.Q.Value <= 0.01 &
-         Lib.PG.Q.Value <= 0.01 &
-         PEP <= 0.5 &
-         !stringr::str_detect(First.Protein.Description, 'Keratin')
-      )
-
+      filtered_diann_report <- diann::diann_load('report.tsv') %>%
+      dplyr::filter(Lib.Q.Value <= 0.01 &
+                    Lib.PG.Q.Value <= 0.01 &
+                    PEP <= 0.5 &
+                    !stringr::str_detect(First.Protein.Description, 
+                                         'Keratin'))
+   
    maxlfq_matrix <- diann::diann_maxlfq(filtered_diann_report,
-                                    group.header = 'Protein.Group',
-                                    id.header = 'Precursor.Id',
-                                    quantity.header = 'Precursor.Normalised')
-
+                                        group.header = 'Protein.Group',
+                                        id.header = 'Precursor.Id',
+                                        quantity.header = 'Precursor.Normalised')
+   
    maxlfq_df <- maxlfq_matrix %>%
       as.data.frame() %>%
       tibble::rownames_to_column(var = 'Protein.Group') %>%
       tibble::as_tibble() %>%
-      tidyr::pivot_longer(cols = 2:(ncol(maxlfq_matrix) + 1),
+      tidyr::pivot_longer(cols = 2:last_col(),
                           names_to = 'File.Name',
                           values_to = 'MaxLFQ') %>%
       dplyr::inner_join(x = filtered_diann_report %>%
@@ -85,41 +84,46 @@ diann_reporter <- function(report_in, report_out
                         by = c('File.Name', 
                                'Protein.Group'),
                         na_matches = 'na') %>%
-      dplyr::select(-c(1, 4:5)) %>%
+      dplyr::select(-c('File.Name', 
+                       'Protein.Ids',
+                       'Protein.Names',
+                       'Lib.Q.Value',
+                       'Lib.PG.Q.Value')) %>%
       dplyr::relocate(First.Protein.Description, .after = Genes) %>%
       tidyr::nest(data = c(Protein.Group:MaxLFQ))
-
-   df_joined <- dplyr::left_join(
-      maxlfq_df %>%
-         tidyr::unnest(data) %>%
-         dplyr::select(-c('Modified.Sequence')) %>%
-         dplyr::rename('Sample.Name' = Run),
-      maxlfq_df %>%
-         dplyr::mutate(n.peptides = purrr::map(data, peptide_count)) %>%
-         dplyr::select(c('Run', 'n.peptides')) %>%
-         tidyr::unnest(n.peptides)  %>%
-         purrr::set_names(
-            'Sample.Name',
-            'Protein.Group',
-            'Number.Peptides'),
-      by = c("Sample.Name","Protein.Group")) %>%
+   
+   df_joined <- dplyr::left_join(x = maxlfq_df %>%
+                                    tidyr::unnest(data) %>%
+                                    dplyr::select(-c('Modified.Sequence')) %>%
+                                    dplyr::rename('Sample.Name' = Run),
+                                 y = maxlfq_df %>%
+                                    dplyr::mutate(n.peptides = purrr::map(data, 
+                                                                          peptide_count)) %>%
+                                    dplyr::select(c('Run', 
+                                                    'n.peptides')) %>%
+                                    tidyr::unnest(n.peptides)  %>%
+                                    purrr::set_names('Sample.Name',
+                                                     'Protein.Group',
+                                                     'Number.Peptides'),
+                                 by = c("Sample.Name",
+                                        "Protein.Group")) %>%
       dplyr::group_by(Sample.Name) %>%
       tidyr::nest() %>%
-      dplyr::mutate(end.data = purrr::map(data, eliminate_duplicate)) %>%
+      dplyr::mutate(end.data = purrr::map(data, 
+                                          eliminate_duplicate)) %>%
       dplyr::select(-c(data)) %>%
       tidyr::unnest(end.data)
-
-   fin_df <- dplyr::inner_join(
-      df_joined %>%
-         dplyr::select(-c(6)) %>%
-         tidyr::pivot_wider(names_from = Sample.Name,
-                            values_from = MaxLFQ),
-      df_joined %>%
-         dplyr::select(c(1:2, 6)) %>%
-         tidyr::pivot_wider(names_from = Sample.Name,
-                            values_from = Number.Peptides,
-                            names_prefix = 'Number.Peptides'),
-      by = 'Protein.Group') %>%
+   
+   fin_df <- dplyr::inner_join(x = df_joined %>%
+                                  dplyr::select(-c(6)) %>%
+                                  tidyr::pivot_wider(names_from = Sample.Name,
+                                                     values_from = MaxLFQ),
+                               y = df_joined %>%
+                                  dplyr::select(c(1:2, 6)) %>%
+                                  tidyr::pivot_wider(names_from = Sample.Name,
+                                                     values_from = Number.Peptides,
+                                                     names_prefix = 'Number.Peptides'),
+                               by = 'Protein.Group') %>%
       dplyr::rename('Protein.Accession' = Protein.Group,
                     'Protein.Name' = First.Protein.Description)
 
