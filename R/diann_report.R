@@ -79,7 +79,7 @@ diann_reporter <- function(report_in, report_out
                           values_to = 'MaxLFQ') %>%
       dplyr::inner_join(
          filtered_diann_report %>%
-            dplyr::select(-c(7:13, 15:38, 40:58)),
+            dplyr::select(-c(7:13, 15:38, 40:last_col()),
          .,
          by = c('File.Name', 'Protein.Group'),
          na_matches = 'na') %>%
