@@ -77,12 +77,14 @@ diann_reporter <- function(report_in, report_out
       tidyr::pivot_longer(cols = 2:(ncol(maxlfq_matrix) + 1),
                           names_to = 'File.Name',
                           values_to = 'MaxLFQ') %>%
-      dplyr::inner_join(
-         filtered_diann_report %>%
-            dplyr::select(-c(7:13, 15:38, 40:last_col())),
-         .,
-         by = c('File.Name', 'Protein.Group'),
-         na_matches = 'na') %>%
+      dplyr::inner_join(x = filtered_diann_report %>%
+                           dplyr::select(-c('PG.Quantity':'Genes.MaxLFQ.Unique', 
+                                            'Stripped.Sequence':'Predicted.iRT', 
+                                            'Ms1.Profile.Corr':'Predicted.iIM')),
+                        y = .,
+                        by = c('File.Name', 
+                               'Protein.Group'),
+                        na_matches = 'na') %>%
       dplyr::select(-c(1, 4:5)) %>%
       dplyr::relocate(First.Protein.Description, .after = Genes) %>%
       tidyr::nest(data = c(Protein.Group:MaxLFQ))
