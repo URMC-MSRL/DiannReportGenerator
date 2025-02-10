@@ -3,6 +3,7 @@
 #' Using the 'report.tsv' generated from a DIA-NN search, creates a new file that includes MaxLFQ and number of peptides in wide format
 #'
 #' @import dplyr
+#' @import tidyr
 #' @import readr
 #' @import stringr
 #' @import tibble
@@ -64,9 +65,9 @@ diann_reporter <- function(report_in, report_out
   
  data_wide <- dplyr::bind_rows(x = n_peptides,
                                y = maxlfq) %>% 
-   dplyr::pivot_wider(names_from = variable,
+   tidyr::pivot_wider(names_from = variable,
                       values_from = value) %>% 
-   dplyr::pivot_wider(names_from = Run,
+   tidyr::pivot_wider(names_from = Run,
                       values_from = c(NumberPeptides,
                                       MaxLFQ)) %>% 
    dplyr::rename('UniProt Accession' = Protein.Group,
