@@ -34,10 +34,7 @@ diann_reporter <- function(report_in, report_out
                     Lib.PG.Q.Value <= 0.01 &
                     PEP <= 0.2 &
                     !stringr::str_detect(First.Protein.Description, 
-                                         'Keratin')) %>% 
-    dplyr::mutate(Run = sub("^[^_]*_([^_]*).*", 
-                            "\\1",
-                            Run)) 
+                                         'Keratin'))
   
   n_peptides <- filtered_diann_report %>% 
     dplyr::distinct(Run,
