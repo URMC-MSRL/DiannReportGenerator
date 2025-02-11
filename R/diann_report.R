@@ -52,7 +52,7 @@ diann_reporter <- function(report_in, report_out
                     Genes,
                     First.Protein.Description) %>% 
     dplyr::summarise(value = n()) %>% 
-    dplyr::mutate(variable = 'NumberPeptides')
+    dplyr::mutate(variable = 'Number.Peptides')
   
  maxlfq <- filtered_diann_report %>% 
    dplyr::distinct(Run,
@@ -68,11 +68,10 @@ diann_reporter <- function(report_in, report_out
    tidyr::pivot_wider(names_from = variable,
                       values_from = value) %>% 
    tidyr::pivot_wider(names_from = Run,
-                      values_from = c(NumberPeptides,
+                      values_from = c(Number.Peptides,
                                       MaxLFQ)) %>% 
-   dplyr::rename('UniProt Accession' = Protein.Group,
-                 'Gene Name' = Genes,
-                 'Protein Name' = First.Protein.Description)
+   dplyr::rename('Protein.Accession' = Protein.Group,
+                 'Protein.Name' = First.Protein.Description)
   
   readr::write_tsv(data_wide, report_out)
 }
