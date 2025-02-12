@@ -32,6 +32,7 @@ diann_reporter <- function(report_in, report_out
    filtered_diann_report <- readr::read_tsv('report.tsv') %>%
     dplyr::filter(Lib.Q.Value <= 0.01 &
                     Lib.PG.Q.Value <= 0.01 &
+                    Quantity.Quality > 0 &
                     PEP <= 0.2 &
                     !stringr::str_detect(First.Protein.Description, 
                                          'Keratin'))
