@@ -61,15 +61,26 @@ diann_reporter <- function(report_in, report_out
    dplyr::rename('value' = PG.MaxLFQ) %>% 
    dplyr::mutate(variable = 'MaxLFQ')
   
- data_wide <- dplyr::bind_rows(x = n_peptides,
-                               y = maxlfq) %>% 
-   tidyr::pivot_wider(names_from = variable,
-                      values_from = value) %>% 
-   tidyr::pivot_wider(names_from = Run,
-                      values_from = c(Number.Peptides,
-                                      MaxLFQ)) %>% 
-   dplyr::rename('Protein.Accession' = Protein.Group,
-                 'Protein.Name' = First.Protein.Description)
+ data_merge <- dplyr::bind_rows(x = n_peptides,
+                                y = maxlfq) %>% 
+    tidyr::pivot_wider(names_from = variable,
+                       values_from = value)
+  
+  data_wide <- full_join(
+    x = data_merge %>% 
+      dplyr::select(-MaxLFQ) %>% 
+      tidyr::pivot_wider(names_from = Run,
+                         values_from = `Number.Peptides`,
+                         names_prefix = 'Number.Peptides_'),
+    y = data_merge %>% 
+      dplyr::select(-Number.Peptides) %>% 
+      tidyr::pivot_wider(names_from = Run,
+                         values_from = MaxLFQ),
+    by = c('Protein.Group',
+           'Genes')
+  ) %>% 
+    dplyr::rename('Protein.Accession' = Protein.Group,
+                  'Protein.Name' = First.Protein.Description)
   
   readr::write_tsv(data_wide, report_out)
 }
