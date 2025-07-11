@@ -53,8 +53,6 @@ diann_202_reporter <- function(report_in = 'report.parquet',
 
   contaminants = {{contaminants}}
 
-  globalVariables(c('Run'))
-
   # Import the DIA-NN Outputs ----
   ## Read in the report file (the large parquet file).
   diann_report <- arrow::read_parquet(report_in)
