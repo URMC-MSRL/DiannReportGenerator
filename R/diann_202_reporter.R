@@ -77,7 +77,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                       paste0(contaminants))) %>%
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            .data$Run))
+                            Run))
 
   ## Low Quality Precursors Data Frame ----
   poor_quality_data <- diann_report %>%
@@ -110,7 +110,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                   .data$PG.PEP)
   dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                           "\\1",
-                          .data$Run))
+                          Run))
 
   # Prepare the Data For Downstream Analyses ----
   ## Filter the data ----
@@ -130,7 +130,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                          paste0(contaminants))) %>% # Searches the Genes column for any of the strings entered for the "contaminants" argument
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            .data$Run)) # Remove the researcher name and work order number from the run name.
+                            Run)) # Remove the researcher name and work order number from the run name.
 
   ## Quantify Number of Peptides ----
   ### Quantify the number of unique peptides quantified for each protein group within each sample.
@@ -206,7 +206,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                     .data$PG.PEP) %>%
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            .data$Run))
+                            Run))
 
   # Write the Data to Files ----
   readr::write_tsv(data_wide,
