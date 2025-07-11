@@ -20,7 +20,10 @@
 diann_reporter <- function(report_in,
                            report_out) {
 
-  filtered_diann_report <- readr::read_tsv(report_in) %>%
+  report_in = {{report_in}}
+  report_out = {{report_out}}
+
+  filtered_diann_report <- readr::read_tsv(paste0(report_in)) %>%
     dplyr::filter(.data$Lib.Q.Value <= 0.01 &
                     .data$Lib.PG.Q.Value <= 0.01 &
                     .data$Quantity.Quality > 0 &
@@ -81,5 +84,5 @@ diann_reporter <- function(report_in,
                   'Protein.Name' = .data$First.Protein.Description)
 
   readr::write_tsv(data_wide,
-                   report_out)
+                   paste0(report_out))
 }
