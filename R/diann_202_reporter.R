@@ -53,6 +53,8 @@ diann_202_reporter <- function(report_in = 'report.parquet',
 
   contaminants = {{contaminants}}
 
+  globalVariables(c('Run'))
+
   # Import the DIA-NN Outputs ----
   ## Read in the report file (the large parquet file).
   diann_report <- arrow::read_parquet(report_in)
@@ -87,7 +89,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                     .data$Lib.PG.Q.Value < qvalue_filter |
                     .data$PEP < pep_filter |
                     .data$PG.Q.Value <= qvalue_filter) %>%
-    dplyr::select(.data$Run,
+    dplyr::select(Run,
                   .data$Protein.Group,
                   .data$Protein.Names,
                   .data$Genes,
@@ -136,13 +138,13 @@ diann_202_reporter <- function(report_in = 'report.parquet',
   ### Quantify the number of unique peptides quantified for each protein group within each sample.
   ### This will use unique peptides (not precursors) as the number of peptide IDs. This number also includes modified versions of the same peptide.
   n_peptide_data <- filtered_diann_report %>%
-    dplyr::distinct(.data$Run, ## Subset only the columns we will need for future steps
+    dplyr::distinct(Run, ## Subset only the columns we will need for future steps
                     .data$Protein.Group,
                     .data$Genes,
                     .data$Precursor.Id,
                     .data$Modified.Sequence) %>%
     dplyr::select(-.data$Precursor.Id) %>%
-    dplyr::group_by(.data$Run, # We will count based upon the grouping of run name, protein group, and gene name
+    dplyr::group_by(Run, # We will count based upon the grouping of run name, protein group, and gene name
                     .data$Protein.Group,
                     .data$Genes) %>%
     dplyr::summarise(value = dplyr::n(), # Count the total number of unique peptides in each group.
@@ -152,7 +154,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
 
   ## Make a MaxLFQ Data Frame ----
   maxlfq_data <- filtered_diann_report %>%
-    dplyr::distinct(.data$Run,
+    dplyr::distinct(Run,
                     .data$Protein.Group,
                     .data$Genes,
                     .data$PG.MaxLFQ) %>%
@@ -166,7 +168,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                 y = maxlfq_data) %>%
     tidyr::pivot_wider(names_from = .data$variable, # Make the data frame wide by the "variable" column. This will create two new columns: Number.Peptides and MaxLFQ. But each row will still be identified by the protein group and run name.
                        values_from = .data$value) %>%
-    tidyr::pivot_wider(names_from = .data$run, # Make the data frame wide by the "run" column. This will create a new column for each run with the values of Number.Peptides and MaxLFQ. Now each row is a different protein group and each column is either the number of peptides or the MaxLFQ value of a given run.
+    tidyr::pivot_wider(names_from = Run, # Make the data frame wide by the "run" column. This will create a new column for each run with the values of Number.Peptides and MaxLFQ. Now each row is a different protein group and each column is either the number of peptides or the MaxLFQ value of a given run.
                        values_from = c(.data$Number.Peptides,
                                        .data$MaxLFQ)) %>%
     dplyr::rename('Protein.Group' = .data$protein_group,
@@ -183,7 +185,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
   # QC Data Frame ----
   ## We will use this later to create plots.
   qc_data <- filtered_diann_report %>%
-    dplyr::distinct(.data$Run,
+    dplyr::distinct(Run,
                     .data$Protein.Group,
                     .data$Protein.Names,
                     .data$Genes,
