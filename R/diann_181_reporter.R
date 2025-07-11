@@ -125,13 +125,22 @@ diann_181_reporter <- function(report_in = 'report.tsv',
   ### Combine the peptide count and MaxLFQ data frames together. Then make the
   ### data frame wide so that each row is a different protein group and each
   ### column is either the number of peptides or the MaxLFQ value of a given run.
-  data_wide <- dplyr::bind_rows(x = n_peptide_data, # Append the MaxLFQ data frame to the end of the Peptide Count data frame.
+  data_wide <- dplyr::bind_rows(x = n_peptide_data %>%
+                                  dplyr::select(-.data$first_protein_description), # Append the MaxLFQ data frame to the end of the Peptide Count data frame.
                                 y = maxlfq_data) %>%
     tidyr::pivot_wider(names_from = .data$variable, # Make the data frame wide by the "variable" column. This will create two new columns: Number.Peptides and MaxLFQ. But each row will still be identified by the protein group and run name.
                        values_from = .data$value) %>%
     tidyr::pivot_wider(names_from = .data$run, # Make the data frame wide by the "run" column. This will create a new column for each run with the values of Number.Peptides and MaxLFQ. Now each row is a different protein group and each column is either the number of peptides or the MaxLFQ value of a given run.
                        values_from = c(.data$Number.Peptides,
                                        .data$MaxLFQ)) %>%
+    dplyr::left_join(y = n_peptide_data %>%
+                       dplyr::distinct(.data$protein_group,
+                                       .data$genes,
+                                       .data$first_protein_description),
+                     by = c('protein_group',
+                            'genes')) %>%
+    dplyr::relocate(.data$first_protein_description,
+                    .after = 'protein_group') %>%
     dplyr::rename('Protein.Accession' = .data$protein_group,
                   'Protein.Name' = .data$first_protein_description,
                   'Gene.Name' = .data$genes)
