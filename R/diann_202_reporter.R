@@ -77,7 +77,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                       paste0(contaminants))) %>%
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            Run))
+                            .data$Run))
 
   ## Low Quality Precursors Data Frame ----
   poor_quality_data <- diann_report %>%
@@ -87,7 +87,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                     .data$Lib.PG.Q.Value < qvalue_filter |
                     .data$PEP < pep_filter |
                     .data$PG.Q.Value <= qvalue_filter) %>%
-    dplyr::select(Run,
+    dplyr::select(.data$Run,
                   .data$Protein.Group,
                   .data$Protein.Names,
                   .data$Genes,
@@ -107,10 +107,10 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                   .data$PG.MaxLFQ.Quality,
                   .data$PG.Q.Value,
                   .data$PEP,
-                  .data$PG.PEP)
+                  .data$PG.PEP) %>%
   dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                           "\\1",
-                          Run))
+                          .data$Run))
 
   # Prepare the Data For Downstream Analyses ----
   ## Filter the data ----
@@ -130,7 +130,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                          paste0(contaminants))) %>% # Searches the Genes column for any of the strings entered for the "contaminants" argument
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            Run)) # Remove the researcher name and work order number from the run name.
+                            .data$Run)) # Remove the researcher name and work order number from the run name.
 
   ## Quantify Number of Peptides ----
   ### Quantify the number of unique peptides quantified for each protein group within each sample.
@@ -152,7 +152,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
 
   ## Make a MaxLFQ Data Frame ----
   maxlfq_data <- filtered_diann_report %>%
-    dplyr::distinct(Run,
+    dplyr::distinct(.data$Run,
                     .data$Protein.Group,
                     .data$Genes,
                     .data$PG.MaxLFQ) %>%
@@ -183,7 +183,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
   # QC Data Frame ----
   ## We will use this later to create plots.
   qc_data <- filtered_diann_report %>%
-    dplyr::distinct(Run,
+    dplyr::distinct(.data$Run,
                     .data$Protein.Group,
                     .data$Protein.Names,
                     .data$Genes,
@@ -206,7 +206,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                     .data$PG.PEP) %>%
     dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
                             "\\1",
-                            Run))
+                            .data$Run))
 
   # Write the Data to Files ----
   readr::write_tsv(data_wide,
