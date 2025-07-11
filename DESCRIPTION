@@ -8,6 +8,7 @@ Description: Can process DIA-NN search result report files from a variety of
   DIA-NN versions. Included in functions for DIA-NN version 2 and above are a
   variety of reports that can be used for QC or diagnostic purposes.
 Imports:
+  arrow,
   diann,
   dplyr,
   janitor,
