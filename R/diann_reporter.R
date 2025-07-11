@@ -20,10 +20,7 @@
 diann_reporter <- function(report_in,
                            report_out) {
 
-  report_in = {{report_in}}
-  report_out = {{report_out}}
-
-  filtered_diann_report <- readr::read_tsv(paste0(report_in)) %>%
+  filtered_diann_report <- readr::read_tsv(report_in) %>%
     dplyr::filter(.data$Lib.Q.Value <= 0.01 &
                     .data$Lib.PG.Q.Value <= 0.01 &
                     .data$Quantity.Quality > 0 &
@@ -38,19 +35,12 @@ diann_reporter <- function(report_in,
                     .data$First.Protein.Description,
                     .data$Precursor.Id,
                     .data$Modified.Sequence) %>%
-    dplyr::select(-.data$Precursor.Id) %>%
-    dplyr::group_by(.data$Run,
-                    .data$Protein.Group,
-                    .data$Genes,
-                    .data$First.Protein.Description,
-                    .data$Precursor.Id,
-                    .data$Modified.Sequence) %>%
-    dplyr::select(-.data$Precursor.Id) %>%
     dplyr::group_by(.data$Run,
                     .data$Protein.Group,
                     .data$Genes,
                     .data$First.Protein.Description) %>%
-    dplyr::summarise(value = dplyr::n()) %>%
+    dplyr::summarise(value = dplyr::n(),
+                     .groups = 'drop') %>%
     dplyr::mutate(variable = 'Number.Peptides')
 
   maxlfq <- filtered_diann_report %>%
@@ -62,8 +52,8 @@ diann_reporter <- function(report_in,
     dplyr::rename('value' = .data$PG.MaxLFQ) %>%
     dplyr::mutate(variable = 'MaxLFQ')
 
-  data_merge <- dplyr::bind_rows(x = .data$n_peptides,
-                                 y = .data$maxlfq) %>%
+  data_merge <- dplyr::bind_rows(x = n_peptides,
+                                 y = maxlfq) %>%
     tidyr::pivot_wider(names_from = .data$variable,
                        values_from = .data$value)
 
@@ -78,11 +68,12 @@ diann_reporter <- function(report_in,
       tidyr::pivot_wider(names_from = .data$Run,
                          values_from = .data$MaxLFQ),
     by = c('Protein.Group',
-           'Genes')
+           'Genes',
+           'First.Protein.Description')
   ) %>%
     dplyr::rename('Protein.Accession' = .data$Protein.Group,
                   'Protein.Name' = .data$First.Protein.Description)
 
   readr::write_tsv(data_wide,
-                   paste0(report_out))
+                   report_out)
 }
