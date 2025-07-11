@@ -20,7 +20,8 @@
 diann_reporter <- function(report_in,
                            report_out) {
 
-  filtered_diann_report <- readr::read_tsv(report_in) %>%
+  filtered_diann_report <- readr::read_tsv(report_in,
+                                           show_col_types = FALSE) %>%
     dplyr::filter(.data$Lib.Q.Value <= 0.01 &
                     .data$Lib.PG.Q.Value <= 0.01 &
                     .data$Quantity.Quality > 0 &
