@@ -7,6 +7,13 @@ Maintainer: Kyle Swovick <kyle_swovick@urmc.rochester.edu>
 Description: Can process DIA-NN search result report files from a variety of 
   DIA-NN versions. Included in functions for DIA-NN version 2 and above are a
   variety of reports that can be used for QC or diagnostic purposes.
+Imports:
+  dplyr,
+  magrittr,
+  readr,
+  stringr,
+  tibble,
+  tidyr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

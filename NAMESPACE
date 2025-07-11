@@ -2,8 +2,8 @@
 
 export(diann_reporter)
 import(dplyr)
-import(magrittr)
 import(readr)
 import(stringr)
 import(tibble)
 import(tidyr)
+importFrom(magrittr,"%>%")

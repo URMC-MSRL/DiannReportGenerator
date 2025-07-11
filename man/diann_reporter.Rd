@@ -9,15 +9,11 @@ diann_reporter(report_in, report_out)
 \arguments{
 \item{report_in}{Name of the report.tsv from DIA-NN}
 
-\item{report_out}{Name of the output report.}
+\item{report_out}{Name of the output report}
 }
 \value{
 A tsv file with filtered protein abundances and number of peptides
 }
 \description{
 Creates a .tsv report from the 'report.tsv' from DIA-NN
-}
-\examples{
-diann_report(report_in = 'report.tsv',report_out = 'diann_report.tsv')
-
 }
