@@ -166,7 +166,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                                 y = maxlfq_data) %>%
     tidyr::pivot_wider(names_from = .data$variable, # Make the data frame wide by the "variable" column. This will create two new columns: Number.Peptides and MaxLFQ. But each row will still be identified by the protein group and run name.
                        values_from = .data$value) %>%
-    tidyr::pivot_wider(names_from = Run, # Make the data frame wide by the "run" column. This will create a new column for each run with the values of Number.Peptides and MaxLFQ. Now each row is a different protein group and each column is either the number of peptides or the MaxLFQ value of a given run.
+    tidyr::pivot_wider(names_from = .data$run, # Make the data frame wide by the "run" column. This will create a new column for each run with the values of Number.Peptides and MaxLFQ. Now each row is a different protein group and each column is either the number of peptides or the MaxLFQ value of a given run.
                        values_from = c(.data$Number.Peptides,
                                        .data$MaxLFQ)) %>%
     dplyr::rename('Protein.Group' = .data$protein_group,
