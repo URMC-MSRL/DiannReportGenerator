@@ -87,7 +87,7 @@ diann_181_reporter <- function(report_in = 'report.tsv',
                     .data$Precursor.Id,
                     .data$Genes,
                     .data$Protein.Group,
-                    .data$maxlfq_quantity,
+                    maxlfq_quantity,
                     .data$Modified.Sequence)) %>%
     dplyr::rename('File.Name' = .data$Run)
 
