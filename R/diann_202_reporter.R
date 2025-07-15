@@ -180,7 +180,7 @@ diann_202_reporter <- function(report_in = 'report.parquet',
     dplyr::relocate(.data$Protein.Name,
                     .after = 'Gene.Name') %>%
     dplyr::rename_at(.vars = vars(dplyr::starts_with('MaxLFQ')),
-                     .funs = ~sub('MaxLFQ-',
+                     .funs = ~sub('MaxLFQ_',
                                   '',
                                   .))
 
