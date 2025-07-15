@@ -143,7 +143,7 @@ diann_181_reporter <- function(report_in = 'report.tsv',
                     .after = 'protein_group') %>%
     dplyr::rename('Protein.Accession' = .data$protein_group,
                   'Protein.Name' = .data$first_protein_description,
-                  'Gene.Name' = .data$genes) %>%
+                  'Genes' = .data$genes) %>%
     dplyr::rename_at(.vars = vars(dplyr::starts_with('MaxLFQ')),
                      .funs = ~sub('MaxLFQ_',
                                   '',

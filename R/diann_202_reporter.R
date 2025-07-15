@@ -175,10 +175,9 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                      by = c('Protein.Group',
                             'Genes')) %>%
     dplyr::rename('Protein.Name' = .data$First.Protein.Description,
-                  'Gene.Name' = .data$Genes,
                   'Protein.Accession' = .data$Protein.Group) %>%
     dplyr::relocate(.data$Protein.Name,
-                    .after = 'Gene.Name') %>%
+                    .after = 'Genes') %>%
     dplyr::rename_at(.vars = vars(dplyr::starts_with('MaxLFQ')),
                      .funs = ~sub('MaxLFQ_',
                                   '',
