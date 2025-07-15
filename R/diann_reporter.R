@@ -73,7 +73,11 @@ diann_reporter <- function(report_in,
            'First.Protein.Description')
   ) %>%
     dplyr::rename('Protein.Accession' = .data$Protein.Group,
-                  'Protein.Name' = .data$First.Protein.Description)
+                  'Protein.Name' = .data$First.Protein.Description) %>%
+    dplyr::rename_at(.vars = vars(dplyr::starts_with('MaxLFQ')),
+                     .funs = ~sub('MaxLFQ-',
+                                  '',
+                                  .))
 
   readr::write_tsv(data_wide,
                    report_out)

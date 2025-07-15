@@ -127,22 +127,22 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                     .data$PG.MaxLFQ.Quality > quality_filter &
                     .data$PG.Q.Value <= qvalue_filter &
                     !stringr::str_detect(.data$Genes,
-                                         paste0(contaminants))) %>% # Searches the Genes column for any of the strings entered for the "contaminants" argument
-    dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
-                            "\\1",
-                            .data$Run)) # Remove the researcher name and work order number from the run name.
+                                         paste0(contaminants))) #%>% # Searches the Genes column for any of the strings entered for the "contaminants" argument
+    #dplyr::mutate(Run = sub("^[^_]*_([^_]*).*",
+    #                        "\\1",
+    #                        .data$Run)) # Remove the researcher name and work order number from the run name.
 
   ## Quantify Number of Peptides ----
   ### Quantify the number of unique peptides quantified for each protein group within each sample.
   ### This will use unique peptides (not precursors) as the number of peptide IDs. This number also includes modified versions of the same peptide.
   n_peptide_data <- filtered_diann_report %>%
-    dplyr::distinct(Run, ## Subset only the columns we will need for future steps
+    dplyr::distinct(.data$Run, ## Subset only the columns we will need for future steps
                     .data$Protein.Group,
                     .data$Genes,
                     .data$Precursor.Id,
                     .data$Modified.Sequence) %>%
     dplyr::select(-.data$Precursor.Id) %>%
-    dplyr::group_by(Run, # We will count based upon the grouping of run name, protein group, and gene name
+    dplyr::group_by(.data$Run, # We will count based upon the grouping of run name, protein group, and gene name
                     .data$Protein.Group,
                     .data$Genes) %>%
     dplyr::summarise(value = dplyr::n(), # Count the total number of unique peptides in each group.
@@ -178,7 +178,11 @@ diann_202_reporter <- function(report_in = 'report.parquet',
                   'Gene.Name' = .data$Genes,
                   'Protein.Accession' = .data$Protein.Group) %>%
     dplyr::relocate(.data$Protein.Name,
-                    .after = 'Gene.Name')
+                    .after = 'Gene.Name') %>%
+    dplyr::rename_at(.vars = vars(dplyr::starts_with('MaxLFQ')),
+                     .funs = ~sub('MaxLFQ-',
+                                  '',
+                                  .))
 
   # QC Data Frame ----
   ## We will use this later to create plots.
