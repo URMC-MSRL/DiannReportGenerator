@@ -140,7 +140,7 @@ diann_181_reporter <- function(report_in = 'report.tsv',
                      by = c('protein_group',
                             'genes')) %>%
     dplyr::relocate(.data$first_protein_description,
-                    .after = 'protein_group') %>%
+                    .after = 'genes') %>%
     dplyr::rename('Protein.Accession' = .data$protein_group,
                   'Protein.Name' = .data$first_protein_description,
                   'Genes' = .data$genes) %>%
